@@ -44,10 +44,10 @@ public class Case01 {
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
 		driver = WebDriverUtils.webDriver;
-		WebDriverUtils.goTo("http://localhost:" + port + "/lms/");
+		goTo("http://localhost:" + port + "/lms/");
 		String pageTitle = driver.getTitle();
-		assertEquals("ログイン | LMSaaa", pageTitle);
-		WebDriverUtils.getEvidence(new Object() {
+		assertEquals("ログイン | LMS", pageTitle);
+		getEvidence(new Object() {
 		}, "SUCCESS");
 
 	}
