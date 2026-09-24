@@ -50,6 +50,10 @@ public class Case03 {
 		String pageTitle = driver.getTitle();
 		assertEquals("ログイン | LMS", pageTitle);
 
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 	@Test

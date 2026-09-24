@@ -61,6 +61,11 @@ public class Case04 {
 		goTo("http://localhost:" + port + "/lms/");
 		String pageTitle = driver.getTitle();
 		assertEquals("ログイン | LMS", pageTitle);
+
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 	@Test
@@ -89,7 +94,8 @@ public class Case04 {
 		String pageTitle = driver.getTitle();
 		assertEquals("コース詳細 | LMS", pageTitle);
 		// screenshot
-		//		getEvidence(new Object() {}, "SUCCESS");
+		getEvidence(new Object() {
+		}, "SUCCESS");
 
 	}
 
