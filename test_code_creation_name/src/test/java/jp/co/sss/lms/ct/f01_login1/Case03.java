@@ -59,7 +59,6 @@ public class Case03 {
 		driver = WebDriverUtils.webDriver;
 		String loginText = "StudentAA01";
 		String passwordText = "StudentAA011";
-		//		final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
 
 		pageLoadTimeout(60);
 		// id password login
@@ -73,7 +72,6 @@ public class Case03 {
 
 		visibilityTimeout(By.cssSelector("input[type='submit']"), 6);
 		WebElement loginBtn = driver.findElement(By.cssSelector("input[type='submit']"));
-		//		wait.until(ExpectedConditions.elementToBeClickable(loginBtn));
 		loginBtn.click();
 
 		visibilityTimeout(By.tagName("h2"), 6);
