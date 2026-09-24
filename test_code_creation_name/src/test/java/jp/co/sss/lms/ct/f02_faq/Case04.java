@@ -98,10 +98,6 @@ public class Case04 {
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
 
-		// println 確認用
-		//		System.out.println("現在URL：" + driver.getCurrentUrl());
-		//		System.out.println("現在タイトル：" + driver.getTitle());
-
 		// .dropdown click
 		WebElement dropdown = driver.findElement(
 				By.cssSelector("li.dropdown > a.dropdown-toggle"));
@@ -109,29 +105,13 @@ public class Case04 {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", dropdown);
 
-		// println 確認用
-		//		System.out.println("★★★ 機能クリック完了 ★★★");
-		//		System.out.println(
-		//				"クリック後のaria-expanded：" +
-		//						dropdown.getAttribute("aria-expanded"));
 		assertTrue(Boolean.parseBoolean(
 				dropdown.getAttribute("aria-expanded")));
 
 		// helpLink click
 		WebElement helpLink = driver.findElement(By.linkText("ヘルプ"));
 
-		// println 確認用
-		//		System.out.println("★★★ ヘルプ取得成功 ★★★");
-		//		System.out.println("ヘルプ表示：" + helpLink.isDisplayed());
-		//		System.out.println("ヘルプ有効：" + helpLink.isEnabled());
-		//		System.out.println("ヘルプhref：" + helpLink.getAttribute("href"));
-		//		System.out.println("クリック前URL：" + driver.getCurrentUrl());
-
 		js.executeScript("arguments[0].click();", helpLink);
-
-		// println 確認用
-		//		System.out.println("クリック後URL：" + driver.getCurrentUrl());
-
 		// wait
 		new WebDriverWait(driver, Duration.ofSeconds(6))
 				.until(ExpectedConditions.urlContains("/lms/help"));
@@ -154,16 +134,46 @@ public class Case04 {
 		//		System.out.println("現在URL：" + driver.getCurrentUrl());
 		//		System.out.println("現在タイトル：" + driver.getTitle());
 
+		// 現在のタブ
+		String currentWindow = driver.getWindowHandle();
+
 		// 「よくある質問」click
-		//		WebElement faqLinck = driver.findElement(
-		//				By.cssSelector("li.dropdown > a.dropdown-toggle"));
+		visibilityTimeout(By.linkText("よくある質問"), 6);
+		WebElement faqLink = driver.findElement(By.linkText("よくある質問"));
+		// Javascript click 実行
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", faqLink);
+		// println 確認用
+		//		System.out.println("クリック後タブ数："
+		//				+ driver.getWindowHandles().size());
+
+		// newTab
+		WebDriverWait newTabWait = new WebDriverWait(driver, Duration.ofSeconds(6));
+		newTabWait.until(driver -> driver.getWindowHandles().size() == 2);
+
+		// 新しいタブへ切り替え
+		for (String windowHandle : driver.getWindowHandles()) {
+			if (!windowHandle.equals(currentWindow)) {
+				driver.switchTo().window(windowHandle);
+				break;
+			}
+		}
+
+		// 新しいタブへ遷移するまで待機
+		newTabWait.until(
+				ExpectedConditions.urlContains("/lms/faq"));
+		// println 確認用
+		//		System.out.println("現在URL：" + driver.getCurrentUrl());
+		//		System.out.println("現在タイトル：" + driver.getTitle());
 
 		// assert
 		String pageTitle = driver.getTitle();
 		assertEquals("よくある質問 | LMS", pageTitle);
 
 		// screenshot
-		//		getEvidence(new Object() {}, "SUCCESS");
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 }
