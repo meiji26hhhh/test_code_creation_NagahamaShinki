@@ -57,7 +57,6 @@ public class Case04 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		//		driver = WebDriverUtils.webDriver;
 		goTo("http://localhost:" + port + "/lms/");
 		String pageTitle = driver.getTitle();
 		assertEquals("ログイン | LMS", pageTitle);
@@ -103,7 +102,6 @@ public class Case04 {
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
-
 		// .dropdown click
 		WebElement dropdown = driver.findElement(
 				By.cssSelector("li.dropdown > a.dropdown-toggle"));
