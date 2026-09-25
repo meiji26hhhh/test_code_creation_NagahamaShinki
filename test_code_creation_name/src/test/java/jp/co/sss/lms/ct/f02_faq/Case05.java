@@ -177,7 +177,7 @@ public class Case05 {
 		String keywordText = "申し込み";
 
 		pageLoadTimeout(60);
-		// id password login
+		// name keyword
 		WebElement keyword = driver.findElement(By.name("keyword"));
 		keyword.clear();
 		keyword.sendKeys(keywordText);
@@ -203,7 +203,29 @@ public class Case05 {
 	@Order(6)
 	@DisplayName("テスト06 「クリア」ボタン押下で入力したキーワードを消去")
 	void test06() {
-		// TODO ここに追加
+		String keywordText = "申し込み";
+
+		// name keyword
+		WebElement keyword = driver.findElement(By.name("keyword"));
+		keyword.clear();
+		keyword.sendKeys(keywordText);
+		assertEquals(keywordText, keyword.getAttribute("value"));
+
+		// clear前 screenshot
+		getEvidence(new Object() {
+		}, "before");
+
+		// clearBtn 押下
+		WebElement clearBtn = driver.findElement(By.cssSelector("input[type='button'][value='クリア']"));
+		clearBtn.click();
+
+		// 入力欄が空になったことを確認
+		assertEquals("", keyword.getAttribute("value"));
+
+		// clear後 screenshot
+		getEvidence(new Object() {
+		}, "after");
+
 	}
 
 }
