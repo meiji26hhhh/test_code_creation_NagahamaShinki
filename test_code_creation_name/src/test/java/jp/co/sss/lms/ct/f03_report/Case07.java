@@ -3,6 +3,8 @@ package jp.co.sss.lms.ct.f03_report;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -97,7 +100,78 @@ public class Case07 {
 	@Order(3)
 	@DisplayName("テスト03 未提出の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
-		// TODO ここに追加
+
+		pageLoadTimeout(60);
+
+		// 一覧の行が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("tbody tr"), 6);
+
+		// 一覧の行をすべて取得
+		List<WebElement> rows = driver.findElements(
+				By.cssSelector("tbody tr"));
+		WebElement report = null;
+
+		// 各行の内容を表示
+		for (WebElement row : rows) {
+			if (row.getText().contains("未提出")) {
+				report = row;
+				break;
+			}
+		}
+		// println 確認用
+		//		System.out.println("行：" + report.getText());
+
+		// セクション情報を取得
+		String overCharsectionDate = report.findElement(
+				By.cssSelector("td.w20per")).getText();
+		// 曜日削除
+		String sectionDate = overCharsectionDate.substring(0, overCharsectionDate.length() - 3);
+
+		String sectionName = report.findElement(
+				By.cssSelector("td.wh")).getText();
+
+		// println 確認用
+		//		System.out.println("日付：" + sectionDate);
+		//		System.out.println("セクション名：" + sectionName);
+
+		// 「詳細」ボタンを取得
+		WebElement detailButton = report.findElement(
+				By.cssSelector("input[type='submit'][value='詳細']"));
+		// 「詳細」ボタンを押下
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", detailButton);
+
+		// println 確認用
+		//		System.out.println("クリック後URL：" + driver.getCurrentUrl());
+		//		System.out.println("クリック後タイトル：" + driver.getTitle());
+
+		// h2 表示されるまで待機
+		visibilityTimeout(By.cssSelector("#sectionDetail h2"), 6);
+		WebElement h2text = driver.findElement(By.cssSelector("#sectionDetail h2"));
+		// println 確認用
+		//		System.out.println(h2text.getText());
+
+		// セクション名を取得
+		String sectionDetailName = h2text.getText()
+				.replace(h2text.findElement(By.tagName("small")).getText(), "")
+				.trim();
+
+		// 日付を取得
+		String sectionDetailDate = h2text.findElement(
+				By.tagName("small")).getText();
+
+		// println 確認用
+		//		System.out.println("詳細画面セクション名：" + sectionDetailName);
+		//		System.out.println("詳細画面日付：" + sectionDetailDate);
+
+		// assert
+		assertEquals(sectionName, sectionDetailName);
+		assertEquals(sectionDate, sectionDetailDate);
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 	@Test
