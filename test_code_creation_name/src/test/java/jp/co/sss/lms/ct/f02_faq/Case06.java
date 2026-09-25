@@ -212,7 +212,30 @@ public class Case06 {
 	@Order(6)
 	@DisplayName("テスト06 検索結果の質問をクリックしその回答を表示")
 	void test06() {
-		// TODO ここに追加
+
+		// 検索結果の表示を待機
+		visibilityTimeout(By.cssSelector("tbody tr"), 6);
+
+		// 検索結果 先頭のQuestion click （1件目）
+		WebElement clickQuestion = driver.findElement(By.cssSelector("dl[id^='question-h'] > dt"));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", clickQuestion);
+
+		// 回答 取得
+		WebElement answerText = driver.findElement(By.cssSelector("dd[id^='answer-h']"));
+		// 回答が開いて表示されたことを確認
+		assertTrue(answerText.getAttribute("class").contains("fs18"));
+		// テスト
+		assertEquals(
+				"A. 受講者の退職や解雇等、やむを得ない事情による途中終了に関してなど、事情をお伺いした上で、協議という形を取らせて頂きます。 弊社営業担当までご相談下さい。",
+				answerText.getText());
+
+		// スクロール
+		scrollBy("100");
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 }
