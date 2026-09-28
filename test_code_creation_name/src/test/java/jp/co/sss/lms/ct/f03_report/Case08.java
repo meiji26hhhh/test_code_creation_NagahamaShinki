@@ -33,6 +33,8 @@ public class Case08 {
 
 	private WebDriver driver;
 
+	private static String reflectSectionDate;
+
 	/** 前処理 */
 	@BeforeAll
 	static void before() {
@@ -122,6 +124,10 @@ public class Case08 {
 				By.cssSelector("td.w20per")).getText();
 		// 日付の曜日削除
 		String sectionDate = overCharsectionDate.substring(0, overCharsectionDate.length() - 3);
+		// テスト07 反映確認用に 日付 引継ぎ
+		reflectSectionDate = sectionDate;
+		System.out.println("test03 引継ぎ日付：" + reflectSectionDate);
+
 		// セクション名を取得
 		String sectionName = report.findElement(
 				By.cssSelector("td.wh")).getText();
@@ -280,7 +286,45 @@ public class Case08 {
 	@Order(7)
 	@DisplayName("テスト07 該当レポートの「詳細」ボタンを押下しレポート詳細画面で修正内容が反映される")
 	void test07() {
-		// TODO ここに追加
+		// 一覧の行が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("tbody tr"), 6);
+
+		scrollBy("100");
+		System.out.println("test07 引継ぎ日付：" + reflectSectionDate);
+
+		// 一覧の行をすべて取得
+		List<WebElement> rows = driver.findElements(
+				By.cssSelector("tbody tr"));
+		WebElement report = null;
+
+		// 各行の内容を表示
+		for (WebElement row : rows) {
+			if (row.getText().contains(reflectSectionDate)) {
+				report = row;
+				break;
+			}
+		}
+		// 「詳細」ボタン click
+		WebElement detailButton = report.findElement(
+				By.cssSelector("input[type='submit'][value='詳細']"));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", detailButton);
+
+		// h2 表示されるまで待機
+		visibilityTimeout(By.cssSelector("h2"), 6);
+		String reportDetail = driver.getTitle();
+		assertEquals("レポート詳細 | LMS", reportDetail);
+
+		// assert
+		WebElement reflectReportElement = driver.findElement(
+				By.cssSelector("h3 + table td"));
+		String reflectReport = reflectReportElement.getText();
+		assertEquals("テキスト修正テスト", reflectReport);
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 }
