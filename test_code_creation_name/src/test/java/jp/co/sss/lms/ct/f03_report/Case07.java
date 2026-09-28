@@ -207,36 +207,49 @@ public class Case07 {
 	void test05() {
 		// 日報【デモ】が表示されるまで待機
 		visibilityTimeout(
-				By.cssSelector("#main h2"), 6);
+				By.cssSelector("h2"), 6);
 		// 遷移前に h2 日付情報を取得
-		WebElement reportRegistDateElement = driver.findElement(By.cssSelector("#main h2 small"));
+		WebElement reportRegistDateElement = driver.findElement(
+				By.cssSelector("h2 small"));
 		String reportRegistDate = reportRegistDateElement.getText();
 		// textarea input 入力
 		String textareaInput = "入力テスト";
 
-		WebElement textarea = driver.findElement(By.id("content_0"));
+		WebElement textarea = driver.findElement(
+				By.tagName("textarea"));
 		textarea.clear();
-		textarea.sendKeys(textareaInput);
+
+		//		textarea.sendKeys(textareaInput);
+		// sendKeys > JavaScript へ変更
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		// JavaScriptで明示的にフォーカス
+		js.executeScript("arguments[0].focus();", textarea);
+
+		js.executeScript(
+				"arguments[0].value = arguments[1];" +
+						"arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
+						"arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
+				textarea,
+				textareaInput);
 
 		// 提出する click
 		WebElement reportRegistBtn = driver.findElement(
 				By.cssSelector("button[type='submit']"));
-		//		reportRegistBtn.click();
-		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", reportRegistBtn);
 
 		// セクション詳細が表示されるまで待機
 		visibilityTimeout(
 				By.cssSelector("#sectionDetail h2"), 6);
 		// セクション詳細 h2 日付情報を取得
-		WebElement detailH2SmallElement = driver.findElement(By.cssSelector("#sectionDetail h2 small"));
+		WebElement detailH2SmallElement = driver.findElement(
+				By.cssSelector("#sectionDetail h2 small"));
 		String detailH2Date = detailH2SmallElement.getText();
 		// セクション詳細 提出済み日報 inputSubmitValue 名を取得
-		WebElement inputSubmitValue = driver
-				.findElement(By.cssSelector("input[type='submit'][value='提出済み日報【デモ】を確認する']"));
+		WebElement inputSubmitValue = driver.findElement(
+				By.cssSelector("input[type='submit'][value='提出済み日報【デモ】を確認する']"));
 		String inputValue = inputSubmitValue.getAttribute("value");
 		// println 確認用
-		System.out.println("ボタン名：" + inputValue);
+		//		System.out.println("ボタン名：" + inputValue);
 
 		// assert
 		assertEquals("提出済み日報【デモ】を確認する", inputValue);
