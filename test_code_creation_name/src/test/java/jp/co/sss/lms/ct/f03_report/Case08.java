@@ -126,7 +126,8 @@ public class Case08 {
 		String sectionDate = overCharsectionDate.substring(0, overCharsectionDate.length() - 3);
 		// テスト07 反映確認用に 日付 引継ぎ
 		reflectSectionDate = sectionDate;
-		System.out.println("test03 引継ぎ日付：" + reflectSectionDate);
+		// println 確認用
+		//		System.out.println("test03 引継ぎ日付：" + reflectSectionDate);
 
 		// セクション名を取得
 		String sectionName = report.findElement(
@@ -291,6 +292,7 @@ public class Case08 {
 				By.cssSelector("tbody tr"), 6);
 
 		scrollBy("100");
+		// println 確認用
 		System.out.println("test07 引継ぎ日付：" + reflectSectionDate);
 
 		// 一覧の行をすべて取得
@@ -316,9 +318,10 @@ public class Case08 {
 		String reportDetail = driver.getTitle();
 		assertEquals("レポート詳細 | LMS", reportDetail);
 
-		// assert
+		// h3+table 組み合わせを選択
 		WebElement reflectReportElement = driver.findElement(
 				By.cssSelector("h3 + table td"));
+		// assert
 		String reflectReport = reflectReportElement.getText();
 		assertEquals("テキスト修正テスト", reflectReport);
 		// screenshot
