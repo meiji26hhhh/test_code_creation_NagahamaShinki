@@ -101,8 +101,6 @@ public class Case07 {
 	@DisplayName("テスト03 未提出の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
 
-		pageLoadTimeout(60);
-
 		// 一覧の行が表示されるまで待機
 		visibilityTimeout(
 				By.cssSelector("tbody tr"), 6);
@@ -119,51 +117,36 @@ public class Case07 {
 				break;
 			}
 		}
-		// println 確認用
-		//		System.out.println("行：" + report.getText());
 
 		// セクション情報を取得
 		String overCharsectionDate = report.findElement(
 				By.cssSelector("td.w20per")).getText();
-		// 曜日削除
+		// 日付の曜日削除
 		String sectionDate = overCharsectionDate.substring(0, overCharsectionDate.length() - 3);
-
+		// セクション名を取得
 		String sectionName = report.findElement(
 				By.cssSelector("td.wh")).getText();
-
 		// println 確認用
 		//		System.out.println("日付：" + sectionDate);
 		//		System.out.println("セクション名：" + sectionName);
 
-		// 「詳細」ボタンを取得
+		// 「詳細」ボタン
 		WebElement detailButton = report.findElement(
 				By.cssSelector("input[type='submit'][value='詳細']"));
-		// 「詳細」ボタンを押下
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", detailButton);
 
-		// println 確認用
-		//		System.out.println("クリック後URL：" + driver.getCurrentUrl());
-		//		System.out.println("クリック後タイトル：" + driver.getTitle());
-
 		// h2 表示されるまで待機
 		visibilityTimeout(By.cssSelector("#sectionDetail h2"), 6);
-		WebElement h2text = driver.findElement(By.cssSelector("#sectionDetail h2"));
-		// println 確認用
-		//		System.out.println(h2text.getText());
-
+		// h2 情報を取得
+		WebElement h2Element = driver.findElement(By.cssSelector("#sectionDetail h2"));
 		// セクション名を取得
-		String sectionDetailName = h2text.getText()
-				.replace(h2text.findElement(By.tagName("small")).getText(), "")
+		String sectionDetailName = h2Element.getText()
+				.replace(h2Element.findElement(By.tagName("small")).getText(), "")
 				.trim();
-
 		// 日付を取得
-		String sectionDetailDate = h2text.findElement(
+		String sectionDetailDate = h2Element.findElement(
 				By.tagName("small")).getText();
-
-		// println 確認用
-		//		System.out.println("詳細画面セクション名：" + sectionDetailName);
-		//		System.out.println("詳細画面日付：" + sectionDetailDate);
 
 		// assert
 		assertEquals(sectionName, sectionDetailName);
@@ -178,7 +161,45 @@ public class Case07 {
 	@Order(4)
 	@DisplayName("テスト04 「提出する」ボタンを押下しレポート登録画面に遷移")
 	void test04() {
-		// TODO ここに追加
+		// セクション詳細が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("#sectionDetail h2"), 6);
+
+		// 遷移前に h2 日付情報を取得
+		WebElement detailH2SmallElement = driver.findElement(By.cssSelector("#sectionDetail h2 small"));
+		// 日付を取得
+		String detailH2Date = detailH2SmallElement.getText();
+
+		// 日報【デモ】を提出する click
+		WebElement reportBtn = driver.findElement(
+				By.cssSelector("input[type='submit'][value='日報【デモ】を提出する']"));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", reportBtn);
+
+		// 日報【デモ】が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("#main h2"), 6);
+		// println 確認用
+		//		System.out.println("クリック後URL：" + driver.getCurrentUrl());
+		//		System.out.println("クリック後タイトル：" + driver.getTitle());
+
+		// h2 情報を取得
+		WebElement h2Element = driver.findElement(By.cssSelector("#main h2"));
+		// セクション名を取得
+		String reportRegistName = h2Element.getText()
+				.replace(h2Element.findElement(By.tagName("small")).getText(), "")
+				.trim();
+		// 日付を取得
+		String reportRegistDate = h2Element.findElement(
+				By.tagName("small")).getText();
+
+		// assert
+		assertEquals("日報【デモ】", reportRegistName);
+		assertEquals(detailH2Date, reportRegistDate);
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 	@Test
