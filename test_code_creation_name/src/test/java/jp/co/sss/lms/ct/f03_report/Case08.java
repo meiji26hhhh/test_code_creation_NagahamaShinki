@@ -257,7 +257,23 @@ public class Case08 {
 	@Order(6)
 	@DisplayName("テスト06 上部メニューの「ようこそ○○さん」リンクからユーザー詳細画面に遷移")
 	void test06() {
-		// TODO ここに追加
+		// 「ようこそ○○さん」リンク click
+		WebElement userName = driver.findElement(
+				By.partialLinkText("ようこそ"));
+
+		// click() > JavaScript へ変更
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", userName);
+
+		visibilityTimeout(
+				By.cssSelector("h2"), 6);
+		// assert
+		String userDetail = driver.getTitle();
+		assertEquals("ユーザー詳細", userDetail);
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 	@Test
