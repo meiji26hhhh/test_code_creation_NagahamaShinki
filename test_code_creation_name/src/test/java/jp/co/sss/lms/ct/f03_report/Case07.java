@@ -167,7 +167,6 @@ public class Case07 {
 
 		// 遷移前に h2 日付情報を取得
 		WebElement detailH2SmallElement = driver.findElement(By.cssSelector("#sectionDetail h2 small"));
-		// 日付を取得
 		String detailH2Date = detailH2SmallElement.getText();
 
 		// 日報【デモ】を提出する click
@@ -206,7 +205,46 @@ public class Case07 {
 	@Order(5)
 	@DisplayName("テスト05 報告内容を入力して「提出する」ボタンを押下し確認ボタン名が更新される")
 	void test05() {
-		// TODO ここに追加
+		// 日報【デモ】が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("#main h2"), 6);
+		// 遷移前に h2 日付情報を取得
+		WebElement reportRegistDateElement = driver.findElement(By.cssSelector("#main h2 small"));
+		String reportRegistDate = reportRegistDateElement.getText();
+		// textarea input 入力
+		String textareaInput = "入力テスト";
+
+		WebElement textarea = driver.findElement(By.id("content_0"));
+		textarea.clear();
+		textarea.sendKeys(textareaInput);
+
+		// 提出する click
+		WebElement reportRegistBtn = driver.findElement(
+				By.cssSelector("button[type='submit']"));
+		//		reportRegistBtn.click();
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", reportRegistBtn);
+
+		// セクション詳細が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("#sectionDetail h2"), 6);
+		// セクション詳細 h2 日付情報を取得
+		WebElement detailH2SmallElement = driver.findElement(By.cssSelector("#sectionDetail h2 small"));
+		String detailH2Date = detailH2SmallElement.getText();
+		// セクション詳細 提出済み日報 inputSubmitValue 名を取得
+		WebElement inputSubmitValue = driver
+				.findElement(By.cssSelector("input[type='submit'][value='提出済み日報【デモ】を確認する']"));
+		String inputValue = inputSubmitValue.getAttribute("value");
+		// println 確認用
+		System.out.println("ボタン名：" + inputValue);
+
+		// assert
+		assertEquals("提出済み日報【デモ】を確認する", inputValue);
+		assertEquals(reportRegistDate, detailH2Date);
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 }
