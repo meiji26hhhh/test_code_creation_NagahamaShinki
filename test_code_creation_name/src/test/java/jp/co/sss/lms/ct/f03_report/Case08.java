@@ -165,7 +165,7 @@ public class Case08 {
 		WebElement detailH2SmallElement = driver.findElement(By.cssSelector("#sectionDetail h2 small"));
 		String detailH2Date = detailH2SmallElement.getText();
 
-		// 日報【デモ】を提出する click
+		// 提出済み日報【デモ】を確認する click
 		WebElement reportBtn = driver.findElement(
 				By.cssSelector("input[type='submit'][value='提出済み日報【デモ】を確認する']"));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -178,7 +178,8 @@ public class Case08 {
 		WebElement h2Element = driver.findElement(By.cssSelector("#main h2"));
 		// セクション名を取得
 		String reportRegistName = h2Element.getText()
-				.replace(h2Element.findElement(By.tagName("small")).getText(), "")
+				.replace(h2Element.findElement(
+						By.tagName("small")).getText(), "")
 				.trim();
 		// 日付を取得
 		String reportRegistDate = h2Element.findElement(
@@ -197,7 +198,59 @@ public class Case08 {
 	@Order(5)
 	@DisplayName("テスト05 報告内容を修正して「提出する」ボタンを押下しセクション詳細画面に遷移")
 	void test05() {
-		// TODO ここに追加
+		// 日報【デモ】が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("h2"), 6);
+		// 遷移前に h2 日付情報を取得
+		WebElement reportRegistDateElement = driver.findElement(
+				By.cssSelector("h2 small"));
+		String reportRegistDate = reportRegistDateElement.getText();
+		// textarea input 入力
+		String textareaInput = "テキスト修正テスト";
+
+		WebElement textarea = driver.findElement(
+				By.tagName("textarea"));
+		textarea.clear();
+
+		//		textarea.sendKeys(textareaInput);
+		// sendKeys > JavaScript へ変更
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		// JavaScriptで明示的にフォーカス
+		js.executeScript("arguments[0].focus();", textarea);
+
+		js.executeScript(
+				"arguments[0].value = arguments[1];" +
+						"arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
+						"arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
+				textarea,
+				textareaInput);
+
+		// 提出する click
+		WebElement reportRegistBtn = driver.findElement(
+				By.cssSelector("button[type='submit']"));
+		js.executeScript("arguments[0].click();", reportRegistBtn);
+
+		// セクション詳細が表示されるまで待機
+		visibilityTimeout(
+				By.cssSelector("#sectionDetail h2"), 6);
+		// セクション詳細 h2 日付情報を取得
+		WebElement detailH2SmallElement = driver.findElement(
+				By.cssSelector("#sectionDetail h2 small"));
+		String detailH2Date = detailH2SmallElement.getText();
+		// セクション詳細 提出済み日報 inputSubmitValue 名を取得
+		WebElement inputSubmitValue = driver.findElement(
+				By.cssSelector("input[type='submit'][value='提出済み日報【デモ】を確認する']"));
+		String inputValue = inputSubmitValue.getAttribute("value");
+		// println 確認用
+		//		System.out.println("ボタン名：" + inputValue);
+
+		// assert
+		assertEquals("提出済み日報【デモ】を確認する", inputValue);
+		assertEquals(reportRegistDate, detailH2Date);
+		// screenshot
+		getEvidence(new Object() {
+		}, "SUCCESS");
+
 	}
 
 	@Test
