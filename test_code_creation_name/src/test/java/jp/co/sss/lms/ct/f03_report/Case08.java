@@ -3,8 +3,6 @@ package jp.co.sss.lms.ct.f03_report;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +31,7 @@ public class Case08 {
 
 	private WebDriver driver;
 
-	private static String reflectSectionDate;
+	private static String reflectSectionDate = "2026年9月2日(水)";
 
 	/** 前処理 */
 	@BeforeAll
@@ -106,34 +104,18 @@ public class Case08 {
 		visibilityTimeout(
 				By.cssSelector("tbody tr"), 6);
 
-		// 一覧の行をすべて取得
-		List<WebElement> rows = driver.findElements(
-				By.cssSelector("tbody tr"));
-		WebElement report = null;
-
-		// 各行の内容を表示
-		for (WebElement row : rows) {
-			if (row.getText().contains("提出済み")) {
-				report = row;
-				break;
-			}
-		}
-
-		// セクション情報を取得
+		// 2026年9月2日(水) 週報 レポートへ遷移
+		WebElement report = driver.findElement(
+				By.xpath("//tr[td[contains(normalize-space(.),'" + reflectSectionDate + "')]]"));
 		String overCharsectionDate = report.findElement(
 				By.cssSelector("td.w20per")).getText();
 		// 日付の曜日削除
-		String sectionDate = overCharsectionDate.substring(0, overCharsectionDate.length() - 3);
-		// テスト07 反映確認用に 日付 引継ぎ
-		reflectSectionDate = sectionDate;
-		// println 確認用
-		//		System.out.println("test03 引継ぎ日付：" + reflectSectionDate);
-
+		String sectionDate = overCharsectionDate.substring(
+				0, overCharsectionDate.length() - 3);
 		// セクション名を取得
 		String sectionName = report.findElement(
 				By.cssSelector("td.wh")).getText();
-
-		// 「詳細」ボタン
+		// 「詳細」ボタン押下
 		WebElement detailButton = report.findElement(
 				By.cssSelector("input[type='submit'][value='詳細']"));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -172,17 +154,17 @@ public class Case08 {
 		WebElement detailH2SmallElement = driver.findElement(By.cssSelector("#sectionDetail h2 small"));
 		String detailH2Date = detailH2SmallElement.getText();
 
-		// 提出済み日報【デモ】を確認する click
+		// 提出済み週報【デモ】を確認する click
 		WebElement reportBtn = driver.findElement(
-				By.cssSelector("input[type='submit'][value='提出済み日報【デモ】を確認する']"));
+				By.cssSelector("input[type='submit'][value='提出済み週報【デモ】を確認する']"));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", reportBtn);
 
-		// 日報【デモ】が表示されるまで待機
+		// 週報【デモ】が表示されるまで待機
 		visibilityTimeout(
-				By.cssSelector("#main h2"), 6);
+				By.cssSelector("h2"), 6);
 		// h2 情報を取得
-		WebElement h2Element = driver.findElement(By.cssSelector("#main h2"));
+		WebElement h2Element = driver.findElement(By.cssSelector("h2"));
 		// セクション名を取得
 		String reportRegistName = h2Element.getText()
 				.replace(h2Element.findElement(
@@ -193,7 +175,7 @@ public class Case08 {
 				By.tagName("small")).getText();
 
 		// assert
-		assertEquals("日報【デモ】", reportRegistName);
+		assertEquals("週報【デモ】", reportRegistName);
 		assertEquals(detailH2Date, reportRegistDate);
 		// screenshot
 		getEvidence(new Object() {
@@ -205,32 +187,30 @@ public class Case08 {
 	@Order(5)
 	@DisplayName("テスト05 報告内容を修正して「提出する」ボタンを押下しセクション詳細画面に遷移")
 	void test05() {
-		// 日報【デモ】が表示されるまで待機
+		// 週報【デモ】が表示されるまで待機
 		visibilityTimeout(
 				By.cssSelector("h2"), 6);
 		// 遷移前に h2 日付情報を取得
 		WebElement reportRegistDateElement = driver.findElement(
 				By.cssSelector("h2 small"));
 		String reportRegistDate = reportRegistDateElement.getText();
-		// textarea input 入力
-		String textareaInput = "テキスト修正テスト";
 
-		WebElement textarea = driver.findElement(
-				By.tagName("textarea"));
-		textarea.clear();
+		// 学習項目 input 入力
+		String inputTextString = "テキスト修正テスト";
+		WebElement inputElement = driver.findElement(
+				By.id("intFieldName_0"));
 
-		//		textarea.sendKeys(textareaInput);
 		// sendKeys > JavaScript へ変更
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		// JavaScriptで明示的にフォーカス
-		js.executeScript("arguments[0].focus();", textarea);
+		js.executeScript("arguments[0].focus();", inputElement);
 
 		js.executeScript(
 				"arguments[0].value = arguments[1];" +
 						"arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
 						"arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
-				textarea,
-				textareaInput);
+				inputElement,
+				inputTextString);
 
 		// 提出する click
 		WebElement reportRegistBtn = driver.findElement(
@@ -244,17 +224,18 @@ public class Case08 {
 		WebElement detailH2SmallElement = driver.findElement(
 				By.cssSelector("#sectionDetail h2 small"));
 		String detailH2Date = detailH2SmallElement.getText();
-		// セクション詳細 提出済み日報 inputSubmitValue 名を取得
+		// セクション詳細 提出済み週報 inputSubmitValue 名を取得
 		WebElement inputSubmitValue = driver.findElement(
-				By.cssSelector("input[type='submit'][value='提出済み日報【デモ】を確認する']"));
+				By.cssSelector("input[type='submit'][value='提出済み週報【デモ】を確認する']"));
 		String inputValue = inputSubmitValue.getAttribute("value");
 		// println 確認用
 		//		System.out.println("ボタン名：" + inputValue);
 
 		// assert
-		assertEquals("提出済み日報【デモ】を確認する", inputValue);
+		assertEquals("提出済み週報【デモ】を確認する", inputValue);
 		assertEquals(reportRegistDate, detailH2Date);
 		// screenshot
+		scrollBy("100");
 		getEvidence(new Object() {
 		}, "SUCCESS");
 
@@ -278,6 +259,7 @@ public class Case08 {
 		String userDetail = driver.getTitle();
 		assertEquals("ユーザー詳細", userDetail);
 		// screenshot
+		scrollBy("600");
 		getEvidence(new Object() {
 		}, "SUCCESS");
 
@@ -291,22 +273,11 @@ public class Case08 {
 		visibilityTimeout(
 				By.cssSelector("tbody tr"), 6);
 
-		scrollBy("100");
-		// println 確認用
-		System.out.println("test07 引継ぎ日付：" + reflectSectionDate);
+		// 2026年9月2日(水)  + 週報の行を取得
+		WebElement report = driver.findElement(
+				By.xpath("//tr[td[contains(normalize-space(.),'" + reflectSectionDate + "')]" +
+						" and td[contains(normalize-space(.),'週報【デモ】')]]"));
 
-		// 一覧の行をすべて取得
-		List<WebElement> rows = driver.findElements(
-				By.cssSelector("tbody tr"));
-		WebElement report = null;
-
-		// 各行の内容を表示
-		for (WebElement row : rows) {
-			if (row.getText().contains(reflectSectionDate)) {
-				report = row;
-				break;
-			}
-		}
 		// 「詳細」ボタン click
 		WebElement detailButton = report.findElement(
 				By.cssSelector("input[type='submit'][value='詳細']"));
@@ -318,7 +289,7 @@ public class Case08 {
 		String reportDetail = driver.getTitle();
 		assertEquals("レポート詳細 | LMS", reportDetail);
 
-		// h3+table 組み合わせを選択
+		// h3+table 組み合わせたtableを選択
 		WebElement reflectReportElement = driver.findElement(
 				By.cssSelector("h3 + table td"));
 		// assert
